@@ -362,10 +362,17 @@ function <SID>TExpandVars()
 	let l:macroclass = toupper(l:class)
 	let l:camelclass = substitute(l:class, "_", "", "g")
 
+	let use_git = executable('git') && g:templates_detect_git
+
+	if use_git
+		let l:user = system("git config --get user.name")
+		let l:email = system("git config --get user.email")
+	endif
+
 	" Define license variable
 	if executable('licensee') && g:templates_use_licensee
         let l:projectpath = shellescape(expand("%:p:h"))
-        if executable('git') && g:templates_detect_git
+        if use_git
             let l:isgitrepo = matchstr(system("git rev-parse --is-inside-work-tree"), "true")
             if l:isgitrepo ==# "true"
                 let l:projectpath = system("git rev-parse --show-toplevel")
